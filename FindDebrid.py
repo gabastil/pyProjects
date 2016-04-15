@@ -2,7 +2,7 @@ from pyDocs.DocumentPlus import DocumentPlus
 import os
 from Clients import Clients
 
-home = u"C:\\Users\\a5rjqzz\\Desktop\\Python\\files\\mcs-angina-test-3.txt"
+home = u"C:\\Users\\a5rjqzz\\Desktop\\Python\\files\\mcs+all-renal-insuff.txt"
 
 #clientList = Clients().get("stjoes", "dallas", "parkland", "tanner", "beaufort", "halifax", "stmarys", "baylor")
 #clientList = Clients().get("mcs")
@@ -14,7 +14,8 @@ openDoc 	= documentPlus.open
 findLines	= documentPlus.findLines
 #findTokens	= documentPlus.findTokens
 
-terms = ["myocardial infarction", "mi", "angina", "heart attack", "coronary syndrome", "acs", "prinzmetal", "de novo", "ics", "stemi", "nstemi", "nonstemi", "non-stemi", "non stemi"]
+#terms = ["myocardial infarction", "mi", "angina", "heart attack", "coronary syndrome", "acs", "prinzmetal", "de novo", "ics", "stemi", "nstemi", "nonstemi", "non-stemi", "non stemi"]
+terms = ["renal insuff", "kidney insuff"]
 #terms = ["Myocardial infarction"]
 
 wordCounts = 0

@@ -53,10 +53,10 @@ import time
 import Tkinter
 import tkFileDialog
 
-from DICESearch 				import DICESearch 			as DS
-from pyDocs.LoopDir 			import LoopDir 			as LD
-from pyDocs.SpreadsheetSearch 	import SpreadsheetSearch 	as SS
-from pyDocs.InfoText 			import InfoText 			as IT
+from DICESearch 					import DICESearch 			as DS
+from pyDocs.LoopDir 				import LoopDir 				as LD
+from pyDocs.SpreadsheetSearch 		import SpreadsheetSearch 	as SS
+from pyDocs.InfoText 				import InfoText 			as IT
 from pyDocs.SpreadsheetSearchLog 	import SpreadsheetSearchLog	as SSL
 
 __author__ 		= "Glenn Abastillas"
@@ -112,10 +112,10 @@ class Analyze(DS, LD):
 			droolsRulesFile --> path to DROOLs rules file
 			saveFileName    --> name of the new spreadsheet to be saved
 		"""
-		s 		= SS(excerptFile, droolsRulesFile)	# Create a new SpreadsheetSearch object with the excerpt file and Drools rules spreadsheets
-		it 		= IT()						# Display banner graphic
-		ssl 		= SSL()						# Log for this transformation
-		startTime = time.clock()					# Time this process for logging
+		s 		  = SS(excerptFile, droolsRulesFile)	# Create a new SpreadsheetSearch object with the excerpt file and Drools rules spreadsheets
+		it 		  = IT()			# Display banner graphic
+		ssl 	  = SSL()			# Log for this transformation
+		startTime = time.clock()	# Time this process for logging
 
 		os.chdir(baseFileDir)
 
@@ -128,9 +128,9 @@ class Analyze(DS, LD):
 
         # CALL/EVALUATE THESE JUST ONCE BEFORE LOOP(S)
 		append1 	= averageTimeList.append	# append cycle times of the following loop to list for calculating average processing time for superFind()
-		append2 	= sslCodeTime.append	# append cycle times of the following loop to list per CH--- code 	(DEPRECATED: related dcr variable ommented out on line 112)
-		format1 	= str.format			# format function for creating lines for the sslCodeTime list 		(DEPRECATED: related dcr variable ommented out on line 112)
-		superFind = s.superFind			# superFind function for searching for matching codes in the excerpts
+		append2 	= sslCodeTime.append		# append cycle times of the following loop to list per CH--- code 	(DEPRECATED: related dcr variable ommented out on line 112)
+		format1 	= str.format				# format function for creating lines for the sslCodeTime list 		(DEPRECATED: related dcr variable ommented out on line 112)
+		superFind = s.superFind					# superFind function for searching for matching codes in the excerpts
         # - - - - - - - - - - - - - - - - - -
 
 		for code in s.diceCodes:
