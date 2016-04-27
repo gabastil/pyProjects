@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 #
 # Name: 	DICESearch.py
-# Version: 	1.4.1
+# Version: 	1.0.0
 # Author: 	Glenn Abastillas
 # Date: 	November 24, 2015
 #
@@ -42,7 +42,7 @@ __copyright__ 	= "Copyright (c) November 24, 2015"
 __credits__ 	= "Glenn Abastillas"
 
 __license__ 	= "Free"
-__version__ 	= "1.4.1"
+__version__ 	= "1.0.0"
 __maintainer__ 	= "Glenn Abastillas"
 __email__ 		= "a5rjqzz@mmm.com"
 __status__ 		= "Development"

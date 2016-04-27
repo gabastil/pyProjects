@@ -53,48 +53,25 @@ __status__      = "Development"
 
 class Compiler(object):
 
-	def compileDICE(self, path = ".\\data\\types.gd"):
-		""" loads and prepares a list of DICE Codes from types.gd as indicated
-			by the ampersand symbol '&'.
-			@param  path: location of types.gd
-			@return DICE-CODE to TYPE mapping
-		"""
-		types_gd = self.getFile(path=path,split=True)
-		compiledDICE = list()
-		append = compiledDICE.append
-
-		# loop through the lines in types.gd to get DICE Codes (prefixed with '&')
-		for line in types_gd:
-
-			# If the line begins with '&' and is not blank
-			if len(line) > 1 and line[0]=='&': 
-				code = int(line.split('\t')[0][3:])
-				index = int(line.split('\t')[1])
-				append((code, index))
-
-		#return [(int(line.split('\t')[0][3:]), int(line.split('\t')[1])) for line in self.getFile(path = path, split = True) if len(line) > 0 and line[0] == '&'] 
-		return compiledDICE
-
 	def compileTypes(self, path = ".\\data\\types.gd"):
 		""" loads and prepares types.gd for use with the DICESearch class to 
 			extract excerpts from client data.
-			
-			path --> complete path to types.gd
+			@param	path: complete path to types.gd
 		
-			return a tuple of 3 lists containing: 
+			@return a tuple of 3 lists containing: 
 				(1) DICE-CODE to TYPE Mappings
 				(2) TYPE to WORD Mappings
 				(3) WORD to TERM Mappings
 		"""
 
 		types_gd = self.getFile(path=path, split=True)
+
 		wordTermsList = list()
 		typeWordsList = list()
-		#typeCodesList = list()
 		DICECodesList = list()
+
 		appendTo_wordTermsList = wordTermsList.append
 		appendTo_typeWordsList = typeWordsList.append
-		#appendTo_typeCodesList = typeCodesList.append
 		appendTo_DICECodesList = DICECodesList.append
 
 		# loop through the lines in types.gd to get wordTermsList, typeWordsList, typeCodesList and DICECodesList
@@ -110,14 +87,9 @@ class Compiler(object):
 				if prefix == '#':
 					terms = splitLine[3:]
 					appendTo_wordTermsList(terms)
-					#print wordTermsList
 
 				# if prefixed by '$', get word class combinations that belong to this disorder type (e.g., $HTF [heart failure] <-- W01 [systolic] W02 [diastolic] W03/W04 [left/side])
 				elif prefix == '$':
-
-					# get type code for this line (e.g., HTF [heart failure])
-					#typeCodes = splitLine[0][1:]
-					#appendTo_typeCodesList(typeCodes)
 
 					wordClassCombinations = splitLine[3].split()[1:]
 
@@ -126,49 +98,31 @@ class Compiler(object):
 						wordClass = [int(word) for word in combinations.split('/')]
 						appendTo_typeWordsList(wordClass)
 
+				# if prefixed by '&', get DICE Codes and relevant types belonging to each DICE code (e.g., CH001 <-- HTF)
 				elif prefix == '&' and len(splitLine[3]) > 0:
-					DICECode = int(splitLine[0][3:])
 
-					DICECodeTypes = splitLine[3].split()
-					indexOf_DICECode = DICECodeTypes.index
+					DICECodeTypes 	  = splitLine[3].split()
+					indexOf_DICECode  = DICECodeTypes.index
 
 					DICECodeTypesList = list()
 					appendTo_DICECodeTypesList = DICECodeTypesList.append
 
+					# loop through the types belonging to each DICE Code and add it to the list
 					for code in DICECodeTypes:
 						appendTo_DICECodeTypesList(indexOf_DICECode(code))
 
+					DICECode 		  = int(splitLine[0][3:])
+
+					# append this DICE Code and its associated types to the DICECodesList list
 					appendTo_DICECodesList((DICECode, DICECodeTypesList))
-
-		# contains sets of terms used to check membership against -- e.g., [["word1", "word2", "etc."], ["word1", "word2", "etc."], etc.]
-		#wordTermsList = [line.split('\t')[3:] for line in types_gd if len(line) > 0 and line[0] == '#']
-
-		# typeWordsList:    contains lists of word indexes used to reference words in wordTermsList -- e.g., [[1,2,[5,6]],[3,[4,5]], etc.]
-		#typeWordsList = [[[int(w[1:]) for w in word.split('/')] for word in line.split('\t')[3].split()[1:]] for line in types_gd if len(line) > 0 and line[0] == '$']
-
-		#=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=#
-		#"""# typeCodesList:    contains a list of 3-letter concept types for mapping codes in DICECodesList to word index in typeWordsList"""#
-		#	# e.g., ["HTF", "PLE", "etc."]																									  #
-		#=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=#
-		#typeCodesList = [line.split('\t')[0][1:] for line in types_gd if len(line) > 0 and line[0] == '$']
-
-		#=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=#
-		#"""# DICECodesList:     contains tuples of a DICE Code index and a code type(s) in a list used as a key to access words grouped into codes in typeWordsList""" #
-		#	# e.g., [[]]
-		#=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=#
-		
-		#DICECodesList = [(int(line.split('\t')[0][3:]), [typeCodesList.index(code) for code in line.split('\t')[3].split()]) for line in types_gd if len(line) > 0 and line[0] == '&' and len(line.split('\t')[3]) > 0]
 
 		return (DICECodesList, typeWordsList, wordTermsList)
 
 	def compileFiles(self, path = ["L:\\DICE Documents\\JoshsAwesomeScript\\headings.txt", "L:\\DICE Documents\\JoshsAwesomeScript\\negation.txt", "L:\\DICE Documents\\JoshsAwesomeScript\\search-keywords-all.txt"]):
-		""" loads three text files containing textual information
-			for DICESearch Returns a tuple of three files: headings, negation, 
-			and keywords
-
-			path --> list of paths to headings, negation, and keywords files
-
-			return a tuple of 3 files opened as lists:
+		""" loads three text files containing textual information for DICESearch
+			Returns a tuple of three files: headings, negation and keywords
+			@param	path: list of paths to headings, negation, and keywords files
+			@return a tuple of 3 files opened as lists:
 				(1) headings.txt
 				(2) negation.txt
 				(3) search-keywords-all.txt
@@ -210,6 +164,5 @@ if __name__=="__main__":
 	print c.compileTypes()[0]   # Data structure showing mappings for TYPE/DICE from the types.gd file
 	print c.compileTypes()[1]   # Data structure showing mappings for WORD/TYPE from the types.gd file
 	print c.compileTypes()[2]   # Data structure showing mappings for TERM/WORD from the types.gd file
-	print c.compileDICE()   # Data structure showing mappings for TERM/WORD from the types.gd file
 
 	t = "this is a test"
