@@ -47,7 +47,7 @@ class Clients(object):
 			@param	*client: tuple of client(s) names
 			@return	List of links to client documents
 		"""
-		return [self.clients[client.lower()] for client in clients]
+		return [self.clients[client.lower()] for client in clients if len(client) > 0]
 
 	def getAll(self):
 		""" return a list of links to all clients
@@ -66,7 +66,11 @@ class Clients(object):
 
 		for client in self.get(*clients):
 			for clientDocument in os.listdir(client):
-				append("{0}\\{1}".format(client, clientDocument))
+				clientDocumentName = "{0}\\{1}".format(client, clientDocument)
+
+				#if os.path.isfile(clientDocumentName)==True:
+				if ".txt" in clientDocumentName:
+					append(clientDocumentName)
 
 		return fileList
 

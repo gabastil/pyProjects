@@ -71,20 +71,20 @@ class DICESearch(Compiler, SpreadsheetSearch):
 		self.toDICE, self.toTYPE, self.toWORD = self.compileTypes()	# Compile mappings for TYPE/DICE, WORD/TYPE, and TERM/WORD for DICESearch Class	
 		super(DICESearch, self).__init__()							# Initiate SpreadsheetSearch for DICESearch Class
 
-		self.addColumn("Document", length = 1)	# Column 01 (A) to contain name of Document processed
-		self.addColumn("DICECode")				# Column 02 (B) to contain associated DICE Code with excerpt
-		self.addColumn("TYPECode")				# Column 03 (C) to contain associated TYPE Code with excerpt
-		self.addColumn("Combo")					# Column 04 (D) to contain presence of a combination of search terms; TRUE or FALSE
-		self.addColumn("documentIndex")			# Column 05 (E) to contain location of kernel in document
-		self.addColumn("kernelLeft")			# Column 06 (F) to contain excerpt left of kernel with length of scope
-		self.addColumn("kernel")				# Column 07 (G) to contain kernel (i.e., search term)
-		self.addColumn("kernelRight")			# Column 08 (H) to contain excerpt right of kernel with length of scope
-		self.addColumn("comboTerms")			# Column 09 (I) to contain associated combination terms found
-		self.addColumn("proximity")				# Column 10 (J) to contain distance between combination terms if applicable
-		self.addColumn("sufficiency")			# Column 11 (K) to contain sufficiency status of kernel and excerpt
-		self.addColumn("term")					# Column 12 (L) to contain associated terms if sufficiency is 1 (i.e., TRUE)
+		self.addColumn("Document")		# Column 01 (A) to contain name of Document processed
+		self.addColumn("DICECode")		# Column 02 (B) to contain associated DICE Code with excerpt
+		self.addColumn("TYPECode")		# Column 03 (C) to contain associated TYPE Code with excerpt
+		self.addColumn("Combo")			# Column 04 (D) to contain presence of a combination of search terms; TRUE or FALSE
+		self.addColumn("documentIndex")	# Column 05 (E) to contain location of kernel in document
+		self.addColumn("kernelLeft")	# Column 06 (F) to contain excerpt left of kernel with length of scope
+		self.addColumn("kernel")		# Column 07 (G) to contain kernel (i.e., search term)
+		self.addColumn("kernelRight")	# Column 08 (H) to contain excerpt right of kernel with length of scope
+		self.addColumn("comboTerms")	# Column 09 (I) to contain associated combination terms found
+		self.addColumn("proximity")		# Column 10 (J) to contain distance between combination terms if applicable
+		self.addColumn("sufficiency")	# Column 11 (K) to contain sufficiency status of kernel and excerpt
+		self.addColumn("term")			# Column 12 (L) to contain associated terms if sufficiency is 1 (i.e., TRUE)
 
-		self.scope = scope						# Range of text before and behind the kernel to include
+		self.scope = scope				# Range of text before and behind the kernel to include
 
 	def buildKernel(self):
 		"""	creates a new data structure containing strings combined from the 
@@ -98,7 +98,7 @@ class DICESearch(Compiler, SpreadsheetSearch):
 		"""
 		kernel = list()
 
-		if not self.spreadsheet_transposed:			# If the spreadsheet is NOT transposed, i.e., the spreadsheet contains rows, transpose it so it contains columns
+		if not self.transposedPlus:			# If the spreadsheet is NOT transposed, i.e., the spreadsheet contains rows, transpose it so it contains columns
 			self.transpose(1)
 
 		# CALL THESE JUST ONCE BEFORE LOOP(S)
@@ -136,7 +136,7 @@ class DICESearch(Compiler, SpreadsheetSearch):
 				transpose(sheet)
 		"""
 
-		if self.spreadsheet_transposed:
+		if self.transposedPlus:
 			self.transpose(1)
 
 		# CALL THESE JUST ONCE BEFORE LOOP(S)
@@ -427,11 +427,35 @@ class DICESearch(Compiler, SpreadsheetSearch):
 		append 			= typesAndIndicesResults.append
 		# - - - - - - - - - - - - - - - - - -
 
-		for index, locations in findAllResults: 					#(1)
+		# iterate through the (index, location) tuples to see what DICE Code to assign
+		for wordIndex, locations in findAllResults: 				#(1)
+
+			# loop through the types in the toTYPE list
 			for types in self.toTYPE: 								#(2)
 				if len(types) > 0: 									#(3)
+					"""
+					allTermsFound = min((False if s not in resultsIndices else True for s in types))
+
+					print "\nallTermsFound\n", allTermsFound
+
+					if allTermsFound==True:
+						termInRange = isTermInRange(findAllResults, types)
+						print "\nTermInRange:\t", termInRange
+
+						if termInRange[0]==True:
+							append((getType(types[0]), termInRange[1]))
+							print "\n.getType:\t", typesAndIndicesResults
+					"""
 					for terms in types: 							#(4)
-						if index in terms and len(terms) > 0: 		#(5)
+						#print "find all results", findAllResults
+						#print "wordIndex", wordIndex
+						#print "locations", locations
+						#print "terms", terms
+						#print "self.toTYPE", self.toTYPE
+						#print "types", types
+						#print "resultsIndices", resultsIndices
+
+						if wordIndex == terms: 	#(5)
 
 							allTermsFound = min((False if s not in resultsIndices else True for s in terms))
 
@@ -462,7 +486,7 @@ class DICESearch(Compiler, SpreadsheetSearch):
 				buildKernel()
 		"""
 
-		keywords = self.openFile(dbPath)
+		keywords = self.open(dbPath)
 
 		startClock = clock()
 		print "[2A: KERNEL ]\tKernel   building ...",
@@ -582,7 +606,7 @@ class DICESearch(Compiler, SpreadsheetSearch):
 				transpose(sheet)
 		"""
 
-		if self.spreadsheet_transposed:
+		if self.transposedPlus:
 			self.transpose(sheet)
 
 		#=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*#

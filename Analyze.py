@@ -55,9 +55,9 @@ import tkFileDialog
 
 from DICESearch 					import DICESearch 			as DS
 from pyDocs.LoopDir 				import LoopDir 				as LD
-from pyDocs.SpreadsheetSearch 		import SpreadsheetSearch 	as SS
+from pyDocs.SpreadsheetSearch 		import SpreadsheetSearch 	as SS		# checked 2016/05/12
 from pyDocs.InfoText 				import InfoText 			as IT
-from pyDocs.SpreadsheetSearchLog 	import SpreadsheetSearchLog	as SSL
+from pyDocs.SpreadsheetSearchLog 	import SpreadsheetSearchLog	as SSL		# checked 2016/05/12
 
 __author__ 		= "Glenn Abastillas"
 __copyright__ 	= "Copyright (c) December 3, 2015"
@@ -77,10 +77,14 @@ class Analyze(DS, LD):
 			inputPath --> path to raw data files
 			scope	  --> # of characters to include before and after keywords
 		"""
+		oldPath = os.getcwd(); os.chdir("C:\\Users\\a5rjqzz\\Desktop\\Python")
+
 		super(Analyze, self).__init__()
 		self.directory 	= inputPath
 		self.scope 		= scope
 		self.setDir(inputPath)
+
+		os.chdir(oldPath)
 
 	def analyze(self, document):
 		"""	initiates the document analysis for cleaned and sampled documents
@@ -91,7 +95,7 @@ class Analyze(DS, LD):
 			document --> string path to file to be analyzed
 		"""
 
-		fileForAnalysis = super(Analyze, self).openFile(document)
+		fileForAnalysis = super(Analyze, self).open(document)
 
 		resultsForFindAll 			= super(Analyze, self).findAll(fileForAnalysis)
 		resultsForGetTypesAndIndices= super(Analyze, self).getTypesAndIndices(resultsForFindAll)
@@ -174,22 +178,30 @@ class Analyze(DS, LD):
 
 if __name__ == "__main__":
 
+	with open(".\\data\\analyze_py_settings.txt","r") as paths:
+		readin = paths.read().split('\n')
+		#print "PATHS PRINT\t", readin
+		links = [line.split('\t')[1] for line in readin]
+
+	#print links
+
 	#""" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"""
 	#"""				EDIT THE FIELDS BELOW TO ACCOMMODATE THE CURRENT DATA SET				 """
 	#""" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"""
-	outputPath 	  = "C:\\Users\\a5rjqzz\\Desktop\\Python\\files"					# Path to output
-	baseFileDir	  = "C:\\Users\\a5rjqzz\\Desktop\\Python\\pyDocs\\files"			# Path to client data/drools rules
-	engineTuningList = "C:\\Users\\a5rjqzz\\Desktop\\Python\\files\\EngineTuningList.txt"	# Text file containing the client site names and paths to their data
+	outputPath 	  = links[0]#"C:\\Users\\a5rjqzz\\Desktop\\Python\\files"					# Path to output
+	baseFileDir	  = links[1]#"C:\\Users\\a5rjqzz\\Desktop\\Python\\pyDocs\\files"			# Path to client data/drools rules
+	engineTuningList = links[2]#"C:\\Users\\a5rjqzz\\Desktop\\Python\\files\\EngineTuningList.txt"	# Text file containing the client site names and paths to their data
 
-	filein = open(engineTuningList, 'r')
-	files  = [f.split('\t') for f in filein.read().splitlines()]
-	filein.close()
-
-	saveFileName = files[-1][-1]
-	inputPath    = files[-1][0]
-
-	
 	droolsRulesFile	= "{0}\\droolsrules.txt".format(baseFileDir)
+
+	with open(engineTuningList, "r") as filein:
+		files  = [f.split('\t') for f in filein.read().splitlines()]
+		saveFileName = files[-1][-1]
+		inputPath    = files[-1][0]
+	#filein = open(engineTuningList, 'r')
+	#files  = [f.split('\t') for f in filein.read().splitlines()]
+	#filein.close()
+	#print "####\t", saveFileName, inputPath
 
 	#""" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"""
 	#"""			DO NOT EDIT THE CODE BELOW THIS LINE.    EDIT VARIABLES ABOVE ONLY				"""
@@ -249,7 +261,7 @@ if __name__ == "__main__":
 
 	print "\n[6: SAVING  ]\tSaving spreadsheet:",
 	stageStartTime3 = time.clock()
-	excerptName = a.save(name = saveFileName+"_A", savePath = outputPath)
+	excerptName = a.save(savePath = "{}\\{}{}.txt".format(outputPath,saveFileName,"_A"))
 	excerptFile	= "{0}\\{1}.txt".format(outputPath, excerptName)
 	print ": Complete ({0} seconds)".format(time.clock() - stageStartTime3)
 	print "Current Run Time({0} seconds)".format(round(time.clock() - stageStartTime, 2))

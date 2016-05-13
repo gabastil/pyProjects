@@ -40,6 +40,7 @@ The structure of the *.gd file is as follows:
 """
 
 from collections import defaultdict as dictionary
+import os
 
 __author__      = "Glenn Abastillas"
 __copyright__   = "Copyright (c) November 24, 2015"
@@ -53,7 +54,7 @@ __status__      = "Development"
 
 class Compiler(object):
 
-	def compileTypes(self, path = ".\\data\\types.gd"):
+	def compileTypes(self, path = "C:\\Users\\a5rjqzz\\Desktop\\Python\\data\\types.gd"):
 		""" loads and prepares types.gd for use with the DICESearch class to 
 			extract excerpts from client data.
 			@param	path: complete path to types.gd
@@ -77,6 +78,9 @@ class Compiler(object):
 		# loop through the lines in types.gd to get wordTermsList, typeWordsList, typeCodesList and DICECodesList
 		for line in types_gd:
 
+			lineList = list()
+			append = lineList.append
+
 			# if the line is not blank, then process
 			if len(line) > 1:
 
@@ -96,7 +100,9 @@ class Compiler(object):
 					#print wordClassCombinations
 					for combinations in wordClassCombinations:
 						wordClass = [int(word) for word in combinations.split('/')]
-						appendTo_typeWordsList(wordClass)
+						append(wordClass)
+					
+					appendTo_typeWordsList(lineList)
 
 				# if prefixed by '&', get DICE Codes and relevant types belonging to each DICE code (e.g., CH001 <-- HTF)
 				elif prefix == '&' and len(splitLine[3]) > 0:
@@ -144,7 +150,7 @@ class Compiler(object):
 
 			return the read-in file ready for processing.
 		"""
-
+		print "You are in path: {}\n".format(os.getcwd())
 		if path is not None:
 			fileIn = open(path, 'r')
 			fileForProcessing = fileIn.read()
